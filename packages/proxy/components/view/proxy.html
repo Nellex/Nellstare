@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html lang="${lang}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>${title}</title>
+
+        <link rel="stylesheet" href="${css_url}${primeicons}" />
+        <link rel="stylesheet" href="${css_url}${blueprintjs_icons}" />
+        <link id="theme-link" rel="stylesheet" href="${css_url}${prime_theme}" />
+        <link rel="stylesheet" href="${css_url}${primereact_css}" />
+        <link rel="stylesheet" href="${css_url}${primeflex}" />
+        
+        <script src="${js_url}${base64_js}"></script>
+        <script src="${js_url}${nef_js}"></script>
+        <script src="${js_url}${react_js}"></script>
+        <script src="${js_url}${react_dom_js}"></script>
+        <script src="${js_url}${react_transition_group_js}"></script>
+        <script src="${js_url}${primereact_js}"></script>
+        <script>
+            primereact.ripple = false;
+            primereact.inputStyle = 'filled';
+            nef.scontrollerUrl = '${scontroller_url}';
+            const reverseRoute = '${reverse_route}';
+        </script>
+        <style>
+            html {
+                font-size: 12px;
+            }
+
+            body {
+                font-family: var(--font-family);
+                background-color: var(--surface-ground);
+                color: var(--text-color);
+                padding: 0;
+                margin: 0;
+                width: 99%;
+                height: 100%;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        </style>
+    </head>
+    <body></body>
+    <script type="module">
+        let themeSwitcherReq = new nef.serverRequest(nef.scontrollerUrl);
+        themeSwitcherReq.request = {
+            req: 'theme_switcher.theme_switcher',
+            args: {
+                meth: 'launch',
+                token: nef.getToken()
+            }
+        }
+
+        let themeSwitcherRes = await themeSwitcherReq.send();
+
+        if (!themeSwitcherRes.url) {
+            console.error(`App request "${themeSwitcherReq.request.req}" filed! No url in response.`);
+        }
+
+        const {getThemes, setTheme, initThemeSwitcherState} = await import(themeSwitcherRes.url);
+
+        const colorScheme = localStorage.getItem('colorScheme') == 'dark' ? 'dark' : 'light';
+        const themes = await getThemes();
+
+        initThemeSwitcherState({
+            light: themes.light,
+            dark: themes.dark
+        });
+
+        setTheme(colorScheme);
+
+        const {proxyInit} = await import('${js_url}/${package_name}${proxy_req_js}');
+
+        let chkTokenReq = new nef.serverRequest(nef.scontrollerUrl);
+
+        chkTokenReq.request = {
+            req: 'proxy.proxy',
+            args: {
+                meth: 'chk_token',
+                token: nef.getToken()
+            }
+        }
+
+        let chkTokenRes = await chkTokenReq.send();
+
+        if (chkTokenRes.jsonData) {
+            nef.setTokens(chkTokenRes.jsonData);
+        }
+
+        proxyInit();
+
+        setInterval(() => {nef.renewToken()}, 30000);
+    </script>
+</html>

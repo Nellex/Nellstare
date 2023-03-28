@@ -1,0 +1,16 @@
+--create sql dump for project/main_template.prj
+.open './project/main_template.prj'
+.output './project/main_template.dump.sql'
+.dump
+
+--create sql dump for project/template.prj
+.open './project/template.prj'
+.output './project/template.dump.sql'
+.dump
+
+--create sql dump for packages/template/template.pkg
+.open './packages/template/template.pkg'
+.output './packages/template/template.dump.sql'
+.dump
+
+.quit

@@ -1,0 +1,50 @@
+#!/usr/local/bin/lua
+args = {...}
+
+install_cmd = "lua pkg.lua install "
+uninstall_cmd = "lua pkg.lua uninstall "
+build_cmd = "lua pkg.lua build "
+sleep_cmd = 'sleep 2'
+
+packages = {
+    'auth',
+    'core',
+    'proxy',
+    'login',
+    'logout',
+    'theme_switcher',
+    'hub',
+    'users_tool',
+    'demo_app',
+    'demo_app2',
+    'demo_app3',
+    'demo_app4'
+}
+
+if (args[1] == 'build') then
+    print('build')
+
+    for i=1, #packages do
+        os.execute(build_cmd .. packages[i])
+        os.execute(sleep_cmd)
+    end 
+end
+
+if (args[1] == 'uninstall') then
+    print ('uninstall')
+
+    for i = #packages, 1, -1 do
+        os.execute(uninstall_cmd .. packages[i])
+        os.execute(sleep_cmd)
+    end
+end
+
+
+if (args[1] == 'install') then
+    print('install')
+
+    for i=1, #packages do
+        os.execute(install_cmd .. packages[i])
+        os.execute(sleep_cmd)
+    end 
+end
